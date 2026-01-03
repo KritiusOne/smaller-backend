@@ -2,11 +2,15 @@ import mongoose from 'mongoose';
 import { config } from '../config';
 class Db {
   private static instance: Db;
-
+  private connectionPromise: Promise<typeof mongoose> | null = null;
   private constructor(){
     const queryString = config.queryString;
-    mongoose.connect(`${queryString}${config.databaseNameDev}`).then(()=>{
+    this.connectionPromise = mongoose.connect(`${queryString}${config.databaseNameDev}`).then(()=>{
       console.log('Connected to MongoDB');
+      return mongoose;
+    }).catch((err)=>{
+      console.error('Error connecting to MongoDB', err);
+      throw err;
     })
   }
 
@@ -15,6 +19,11 @@ class Db {
       Db.instance = new Db();
     }
     return Db.instance;
+  }
+  async waitForConnection(): Promise<void> {
+    if (this.connectionPromise) {
+      await this.connectionPromise;
+    }
   }
 
   closeConnection(): void {
