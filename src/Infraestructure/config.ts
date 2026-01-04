@@ -5,5 +5,5 @@ dotenv.config();
 export const config = {
   queryString: process.env.queryString || '',
   databaseNameDev: process.env.databaseNameDev || '',
-  port: process.env.port || '3000',
+  port: parseInt(process.env.PORT || '3000', 10),
 };

@@ -2,7 +2,7 @@ import { Application } from 'express';
 import { config } from './Infraestructure/config';
 
 export const server = (app: Application) => {
-  const PORT = config.port;
+  const PORT: number = config.port;
   app.get('/', (req, res)=> {
     res.send(`
       <h1>Welcome to the Smaller Backend Server</h1>
