@@ -8,7 +8,11 @@ const URLScheme = new Schema<IURL>({
   shortURL: { type: String, required: true },
   userId: { type: String, required: true },
   createdAt: { type: Date, required: true },
-})
+  alias: { type: String, required: false },
+},
+{
+  collection: CollectionList.URLS,
+});
 
 const URLModel = model<IURL>(CollectionList.URLS, URLScheme);
 export { URLModel };

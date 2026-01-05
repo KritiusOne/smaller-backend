@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import { createURLScheme, getURLScheme } from "./URLSchemes";
 import { URLService } from "@src/Aplication/services/URLService";
+import { URLRepository } from "@src/Infraestructure/repositories/URLRepository";
 
-const urlService = new URLService();
+const urlRepository = new URLRepository();
+const urlService = new URLService(urlRepository);
 
 async function getUrl(req: Request, res: Response){
   const { id } = req.params;

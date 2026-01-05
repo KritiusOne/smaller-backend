@@ -1,38 +1,47 @@
 import { IURLService } from "@src/Domain/services/IURLService";
+import { IURLRepository } from "@src/Domain/repositories/IURLRepository";
 import { generateShortURL } from "@src/helpers/getShortURL";
-import { URLModel } from "@src/Infraestructure/db/schemes/URLScheme";
 
-export class URLService implements IURLService{
+export class URLService implements IURLService {
+  constructor(private urlRepository: IURLRepository) {}
+
   async getAllURLs(): Promise<string[]> {
-    const urlArr = await URLModel.find();
-    urlArr.map(url => {
-      console.log(url);
-    })
-    return [];
+    const urls = await this.urlRepository.findAll();
+    return urls.map(url => url.shortURL);
   }
+
   async getURLById(id: string): Promise<string | null> {
-    const url = await URLModel.findOne({
-      id: id
-    })
-    if(!url){
+    const url = await this.urlRepository.findById(id);
+    if (!url) {
       return null;
     }
     return url.originalURL;
   }
+
   async createShortURL(originalURL: string, alias?: string): Promise<string> {
-    const newURL = await URLModel.create({
-      createdAt: new Date(),
-      alias: alias ? alias : '',
-      originalURL: originalURL,
-      shortURL: generateShortURL(),
-      userId: "dasfasdf", // TODO: Implement user management
-      id: "sfsfs" // TODO: Implement ID generation
-    })
-    const res = await newURL.save();
-    if(!res){
-      throw new Error('Error creating short URL'); // TODO: Global error handling
+    // Generar shortURL y verificar que no exista
+    let shortURL = alias || generateShortURL();
+    let existingURL = await this.urlRepository.findByShortURL(shortURL);
+    
+    // Si existe, generar uno nuevo (hasta 5 intentos)
+    let attempts = 0;
+    while (existingURL && attempts < 5) {
+      shortURL = generateShortURL();
+      existingURL = await this.urlRepository.findByShortURL(shortURL);
+      attempts++;
     }
+
+    if (existingURL) {
+      throw new Error('Unable to generate unique short URL');
+    }
+
+    const newURL = await this.urlRepository.create({
+      originalURL,
+      shortURL,
+      userId: "temporary-user-id", // TODO: Replace with actual user ID from auth
+      alias: alias
+    });
+
     return newURL.shortURL;
   }
-
 }
