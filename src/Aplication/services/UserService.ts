@@ -18,7 +18,6 @@ export class UserService implements IUserService {
   }
 
   async createUser(name: string, email: string): Promise<IUser> {
-    // Verificar si el email ya existe
     const existingUser = await this.userRepository.findByEmail(email);
     if (existingUser) {
       throw new Error('Email already exists');

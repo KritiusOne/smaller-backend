@@ -1,6 +1,7 @@
 import { IURLService } from "@src/Domain/services/IURLService";
 import { IURLRepository } from "@src/Domain/repositories/IURLRepository";
 import { generateShortURL } from "@src/helpers/getShortURL";
+import { IURL } from "@src/Domain/entities/URL";
 
 export class URLService implements IURLService {
   constructor(private urlRepository: IURLRepository) {}
@@ -18,12 +19,10 @@ export class URLService implements IURLService {
     return url.originalURL;
   }
 
-  async createShortURL(originalURL: string, alias?: string): Promise<string> {
-    // Generar shortURL y verificar que no exista
-    let shortURL = alias || generateShortURL();
+  async createShortURL(originalURL: string, alias?: string): Promise<IURL> {
+    let shortURL = generateShortURL();
     let existingURL = await this.urlRepository.findByShortURL(shortURL);
     
-    // Si existe, generar uno nuevo (hasta 5 intentos)
     let attempts = 0;
     while (existingURL && attempts < 5) {
       shortURL = generateShortURL();
@@ -42,6 +41,6 @@ export class URLService implements IURLService {
       alias: alias
     });
 
-    return newURL.shortURL;
+    return newURL;
   }
 }
