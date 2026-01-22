@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { createURLScheme, getURLScheme } from "./URLSchemes";
-import { URLService } from "@src/Aplication/services/URLService";
-import { URLRepository } from "@src/Infraestructure/repositories/URLRepository";
+import { container } from "@src/Infraestructure/di/container";
+import { DI_TOKENS } from "@src/Infraestructure/di/tokens";
+import { IURLService } from "@src/Domain/services/IURLService";
 
-const urlRepository = new URLRepository();
-const urlService = new URLService(urlRepository);
+const urlService = container.resolve<IURLService>(DI_TOKENS.IURLService);
 
 async function getUrl(req: Request, res: Response){
   const { id } = req.params;

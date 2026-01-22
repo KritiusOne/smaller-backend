@@ -1,9 +1,12 @@
+import { injectable, inject } from "tsyringe";
+import { DI_TOKENS } from "@src/Infraestructure/di/tokens";
 import { IUserService } from "@src/Domain/services/IUserService";
 import { IUserRepository } from "@src/Domain/repositories/IUserRepository";
 import { IUser } from "@src/Domain/entities/User";
 
+@injectable()
 export class UserService implements IUserService {
-  constructor(private userRepository: IUserRepository) {}
+  constructor(@inject(DI_TOKENS.IUserRepository) private userRepository: IUserRepository) {}
 
   async getUserById(id: string): Promise<IUser | null> {
     return await this.userRepository.findById(id);
@@ -27,7 +30,6 @@ export class UserService implements IUserService {
   }
 
   async updateUser(id: string, data: Partial<Omit<IUser, 'id'>>): Promise<IUser | null> {
-    // Si se está actualizando el email, verificar que no exista
     if (data.email) {
       const existingUser = await this.userRepository.findByEmail(data.email);
       if (existingUser && existingUser.id !== id) {

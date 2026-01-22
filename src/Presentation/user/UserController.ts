@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { createUserScheme, getUserScheme, updateUserScheme } from "./UserSchemes";
-import { UserService } from "@src/Aplication/services/UserService";
-import { UserRepository } from "@src/Infraestructure/repositories/UserRepository";
+import { container } from "@src/Infraestructure/di/container";
+import { DI_TOKENS } from "@src/Infraestructure/di/tokens";
+import { IUserService } from "@src/Domain/services/IUserService";
 
-const userRepository = new UserRepository();
-const userService = new UserService(userRepository);
+const userService = container.resolve<IUserService>(DI_TOKENS.IUserService);
 
 async function getUser(req: Request, res: Response) {
   const { id } = req.params;
@@ -21,23 +21,22 @@ async function getUser(req: Request, res: Response) {
   try {
     const user = await userService.getUserById(id);
     if (!user) {
-      res.status(404).json({ error: "User not found" });
-      return;
+      return res.status(404).json({ error: "User not found" });
     }
-    res.status(200).json(user);
+    return res.status(200).json(user);
   } catch (error) {
     console.error("Error getting user:", error);
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 }
 
 async function getAllUsers(req: Request, res: Response) {
   try {
     const users = await userService.getAllUsers();
-    res.status(200).json(users);
+    return res.status(200).json(users);
   } catch (error) {
     console.error("Error getting users:", error);
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 }
 
@@ -46,23 +45,22 @@ async function createUser(req: Request, res: Response) {
   const parsed = createUserScheme.safeParse({ name, email });
 
   if (!parsed.success) {
-    res.status(400).json({
+    return res.status(400).json({
       error: "Invalid input",
       details: parsed.error
     });
-    return;
   }
 
   try {
     const user = await userService.createUser(name, email);
-    res.status(201).json(user);
+    return res.status(201).json(user);
   } catch (error) {
     if (error instanceof Error && error.message === 'Email already exists') {
       res.status(409).json({ error: error.message });
       return;
     }
     console.error("Error creating user:", error);
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 }
 

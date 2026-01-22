@@ -10,7 +10,9 @@
     "paths": {
       "*": ["node_modules/*"],
       "@src/*": ["src/*"]
-    }
+    },
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "lib": ["es2015"]
 }

@@ -1,10 +1,13 @@
+import { injectable, inject } from "tsyringe";
+import { DI_TOKENS } from "@src/Infraestructure/di/tokens";
 import { IURLService } from "@src/Domain/services/IURLService";
 import { IURLRepository } from "@src/Domain/repositories/IURLRepository";
 import { generateShortURL } from "@src/helpers/getShortURL";
 import { IURL } from "@src/Domain/entities/URL";
 
+@injectable()
 export class URLService implements IURLService {
-  constructor(private urlRepository: IURLRepository) {}
+  constructor(@inject(DI_TOKENS.IURLRepository) private urlRepository: IURLRepository) {}
 
   async getAllURLs(): Promise<string[]> {
     const urls = await this.urlRepository.findAll();

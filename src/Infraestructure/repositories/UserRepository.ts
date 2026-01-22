@@ -1,8 +1,10 @@
+import { injectable } from "tsyringe";
 import { IUserRepository } from "@src/Domain/repositories/IUserRepository";
 import { IUser } from "@src/Domain/entities/User";
 import { UserModel } from "../db/schemes/UserScheme";
 import crypto from 'crypto';
 
+@injectable()
 export class UserRepository implements IUserRepository {
   async findById(id: string): Promise<IUser | null> {
     const user = await UserModel.findOne({ id });

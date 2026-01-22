@@ -1,8 +1,10 @@
+import { injectable } from "tsyringe";
 import { IURLRepository } from "@src/Domain/repositories/IURLRepository";
 import { IURL } from "@src/Domain/entities/URL";
 import { URLModel } from "../db/schemes/URLScheme";
 import crypto from 'crypto';
 
+@injectable()
 export class URLRepository implements IURLRepository {
   async findById(id: string): Promise<IURL | null> {
     const url = await URLModel.findOne({ id });

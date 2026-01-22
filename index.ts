@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+import '@src/Infraestructure/di/container';
 import express from 'express';
 import { server } from './src/server';
 import bodyParser from "body-parser";
