@@ -16,6 +16,9 @@ import { URLService } from "@src/Aplication/services/URLService";
 import { UserService } from "@src/Aplication/services/UserService";
 import { AuthService } from "@src/Aplication/services/AuthService";
 
+// Firebase Auth
+import { initializeAuth } from "@src/Infraestructure/auth";
+
 // Registrar repositorios
 container.registerSingleton<IURLRepository>(DI_TOKENS.IURLRepository, URLRepository);
 container.registerSingleton<IUserRepository>(DI_TOKENS.IUserRepository, UserRepository);
@@ -24,5 +27,9 @@ container.registerSingleton<IUserRepository>(DI_TOKENS.IUserRepository, UserRepo
 container.registerSingleton<IURLService>(DI_TOKENS.IURLService, URLService);
 container.registerSingleton<IUserService>(DI_TOKENS.IUserService, UserService);
 container.registerSingleton<IAuthService>(DI_TOKENS.IAuthService, AuthService);
+
+// Registrar Firebase Auth como instancia
+const firebaseAuth = initializeAuth();
+container.registerInstance(DI_TOKENS.FirebaseAuth, firebaseAuth);
 
 export { container };

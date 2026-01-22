@@ -13,4 +13,7 @@ export const DI_TOKENS = {
   IURLService: Symbol.for("IURLService"),
   IUserService: Symbol.for("IUserService"),
   IAuthService: Symbol.for("IAuthService"),
+  
+  // Firebase
+  FirebaseAuth: Symbol.for("FirebaseAuth"),
 } as const;
