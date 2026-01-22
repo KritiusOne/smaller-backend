@@ -6,6 +6,10 @@ import crypto from 'crypto';
 
 @injectable()
 export class UserRepository implements IUserRepository {
+  async findByFirebaseUid(firebaseUid: string): Promise<IUser | null> {
+    const user = await UserModel.findOne({firebaseUid});
+    return user ? user.toObject() : null;
+  }
   async findById(id: string): Promise<IUser | null> {
     const user = await UserModel.findOne({ id });
     return user ? user.toObject() : null;
