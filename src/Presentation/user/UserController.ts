@@ -40,30 +40,6 @@ async function getAllUsers(req: Request, res: Response) {
   }
 }
 
-async function createUser(req: Request, res: Response) {
-  const { name, email } = req.body;
-  const parsed = createUserScheme.safeParse({ name, email });
-
-  if (!parsed.success) {
-    return res.status(400).json({
-      error: "Invalid input",
-      details: parsed.error
-    });
-  }
-
-  try {
-    const user = await userService.createUser(name, email);
-    return res.status(201).json(user);
-  } catch (error) {
-    if (error instanceof Error && error.message === 'Email already exists') {
-      res.status(409).json({ error: error.message });
-      return;
-    }
-    console.error("Error creating user:", error);
-    return res.status(500).json({ error: "Internal server error" });
-  }
-}
-
 async function updateUser(req: Request, res: Response) {
   const { id } = req.params;
   const { name, email } = req.body;
@@ -131,7 +107,6 @@ async function deleteUser(req: Request, res: Response) {
 export const UserController = {
   getUser,
   getAllUsers,
-  createUser,
   updateUser,
   deleteUser
 };
