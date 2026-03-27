@@ -19,7 +19,7 @@ async function getUser(req: Request, res: Response) {
   }
 
   try {
-    const user = await userService.getUserById(id);
+    const user = await userService.getUserByFirebaseUid(id);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
