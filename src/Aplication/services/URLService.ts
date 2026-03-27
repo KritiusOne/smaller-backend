@@ -4,10 +4,14 @@ import { IURLService } from "@src/Domain/services/IURLService";
 import { IURLRepository } from "@src/Domain/repositories/IURLRepository";
 import { generateShortURL } from "@src/helpers/getShortURL";
 import { IURL } from "@src/Domain/entities/URL";
+import { IUserRepository } from "@src/Domain/repositories/IUserRepository";
 
 @injectable()
 export class URLService implements IURLService {
-  constructor(@inject(DI_TOKENS.IURLRepository) private urlRepository: IURLRepository) {}
+  constructor(
+    @inject(DI_TOKENS.IURLRepository) private urlRepository: IURLRepository,
+    @inject(DI_TOKENS.IUserRepository) private userRepository: IUserRepository
+  ) {}
 
   async getAllURLs(): Promise<string[]> {
     const urls = await this.urlRepository.findAll();
@@ -22,14 +26,23 @@ export class URLService implements IURLService {
     return url.originalURL;
   }
 
-  async createShortURL(originalURL: string, alias?: string): Promise<IURL> {
+  async createShortURL(originalURL: string, userId: string, alias?: string): Promise<IURL> {
+    const user = await this.userRepository.findByFirebaseUid(userId);
+    if(!user){
+      throw new Error('User not found');
+    }
+    const existingAlias = await this.urlRepository.findOneByUserIdAndAlias(userId, alias || '');
+    if(existingAlias){
+      throw new Error('Alias already in use for this user');
+    }
+
     let shortURL = generateShortURL();
-    let existingURL = await this.urlRepository.findByShortURL(shortURL);
+    let existingURL = await this.urlRepository.findOneByUserIdAndAlias(userId, shortURL);
     
     let attempts = 0;
     while (existingURL && attempts < 5) {
       shortURL = generateShortURL();
-      existingURL = await this.urlRepository.findByShortURL(shortURL);
+      existingURL = await this.urlRepository.findOneByUserIdAndAlias(userId, shortURL);
       attempts++;
     }
 
@@ -37,13 +50,18 @@ export class URLService implements IURLService {
       throw new Error('Unable to generate unique short URL');
     }
 
+    console.log("Creating short URL with the following data:");
     const newURL = await this.urlRepository.create({
       originalURL,
       shortURL,
-      userId: "temporary-user-id", // TODO: Replace with actual user ID from auth
-      alias: alias
+      userId,
+      alias: alias ? alias : undefined
     });
-
     return newURL;
+  }
+
+  async getByUserId(userId: string): Promise<IURL[]> {
+    const urls = await this.urlRepository.findByUserId(userId);
+    return urls;
   }
 }

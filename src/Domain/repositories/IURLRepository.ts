@@ -4,6 +4,7 @@ export interface IURLRepository {
   findById(id: string): Promise<IURL | null>;
   findByShortURL(shortURL: string): Promise<IURL | null>;
   findByUserId(userId: string): Promise<IURL[]>;
+  findOneByUserIdAndAlias(userId: string, alias: string): Promise<IURL | null>;
   findAll(): Promise<IURL[]>;
   create(url: Omit<IURL, 'id' | 'createdAt'>): Promise<IURL>;
   delete(id: string): Promise<boolean>;

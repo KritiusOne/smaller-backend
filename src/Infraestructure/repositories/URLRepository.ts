@@ -21,6 +21,11 @@ export class URLRepository implements IURLRepository {
     return urls.map(url => url.toObject());
   }
 
+  async findOneByUserIdAndAlias(userId: string, alias: string): Promise<IURL | null> {
+    const url = await URLModel.findOne({ userId, alias });
+    return url ? url.toObject() : null;
+  }
+
   async findAll(): Promise<IURL[]> {
     const urls = await URLModel.find();
     return urls.map(url => url.toObject());

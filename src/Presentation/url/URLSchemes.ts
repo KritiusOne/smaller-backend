@@ -5,5 +5,8 @@ export const getURLScheme = z.object({
 })
 export const createURLScheme = z.object({
   originalURL: z.url(),
-  alias: z.string().optional()
+  alias: z.string().optional(),
 });
+export const getAllURLsByUserScheme = z.object({
+  userId: z.string()
+})

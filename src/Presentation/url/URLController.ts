@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createURLScheme, getURLScheme } from "./URLSchemes";
+import { createURLScheme, getAllURLsByUserScheme, getURLScheme } from "./URLSchemes";
 import { container } from "@src/Infraestructure/di/container";
 import { DI_TOKENS } from "@src/Infraestructure/di/tokens";
 import { IURLService } from "@src/Domain/services/IURLService";
@@ -26,7 +26,9 @@ async function getUrl(req: Request, res: Response){
 
 async function createShortURL(req: Request, res: Response){
   const { originalURL, alias } = req.body;
-
+  if(req.user){
+    console.log(req.user)
+  }
   const parsed = createURLScheme.safeParse({ originalURL, alias });
   if(!parsed.success){
     res.status(400).json({
@@ -36,7 +38,7 @@ async function createShortURL(req: Request, res: Response){
     return;
   }
   try {
-    const shortURL = await urlService.createShortURL(originalURL, alias);
+    const shortURL = await urlService.createShortURL(originalURL,req.user.uid, alias);
     res.status(201).json({ shortURL });
   } catch (error) {
     console.error("Error creating short URL:", error);
@@ -45,7 +47,26 @@ async function createShortURL(req: Request, res: Response){
   
 }
 
+async function getAllURLsByUser(req: Request, res: Response) {
+  try {
+    const { userId } = req.params;
+    const parsed = getAllURLsByUserScheme.safeParse({ userId });
+    if (!parsed.success) {
+      res.status(400).json({
+        error: "Invalid user ID",
+        details: parsed.error
+      });
+      return;
+    }
+    const urls = await urlService.getByUserId(userId);
+    res.status(200).json({ urls });
+  } catch (error) {
+    console.error("Error fetching URLs:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
 export const URLController = {
   getUrl,
-  createShortURL
+  createShortURL,
+  getAllURLsByUser
 };
