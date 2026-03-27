@@ -12,5 +12,6 @@ export const config = {
       ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
       : '',
     clientEmail: process.env.FIREBASE_CLIENT_EMAIL || '', 
+    firebaseAdminConfigName: process.env.FIREBASE_ADMIN_NAME || 'smaller-backend'
   }
 };
