@@ -7,10 +7,14 @@ import { URLRouter } from '@src/Presentation/url/URLRouter';
 import { UserRouter } from '@src/Presentation/user/UserRouter';
 import { dbInstance } from '@src/Infraestructure/db/Db';
 import { AuthRouter } from '@src/Presentation/auth/AuthRouter';
+import { corsMiddleware } from '@src/Presentation/middleware/Cors-middleware';
 
 const app = express();
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(corsMiddleware);
+
 app.use(URLRouter);
 app.use(UserRouter);
 app.use(AuthRouter);
