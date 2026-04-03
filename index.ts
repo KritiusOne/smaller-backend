@@ -15,9 +15,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(corsMiddleware);
 
+app.use(AuthRouter);
 app.use(URLRouter);
 app.use(UserRouter);
-app.use(AuthRouter);
 dbInstance.waitForConnection()
 .then(() => {
   server(app);

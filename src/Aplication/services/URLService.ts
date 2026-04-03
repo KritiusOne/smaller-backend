@@ -31,18 +31,18 @@ export class URLService implements IURLService {
     if(!user){
       throw new Error('User not found');
     }
-    const existingAlias = await this.urlRepository.findOneByUserIdAndAlias(userId, alias || '');
+    const existingAlias = await this.urlRepository.findOneByUserIdAndAlias(user.id, alias || '');
     if(existingAlias){
       throw new Error('Alias already in use for this user');
     }
 
     let shortURL = generateShortURL();
-    let existingURL = await this.urlRepository.findOneByUserIdAndAlias(userId, shortURL);
+    let existingURL = await this.urlRepository.findOneByUserIdAndAlias(user.id, shortURL);
     
     let attempts = 0;
     while (existingURL && attempts < 5) {
       shortURL = generateShortURL();
-      existingURL = await this.urlRepository.findOneByUserIdAndAlias(userId, shortURL);
+      existingURL = await this.urlRepository.findOneByUserIdAndAlias(user.id, shortURL);
       attempts++;
     }
 
@@ -50,18 +50,21 @@ export class URLService implements IURLService {
       throw new Error('Unable to generate unique short URL');
     }
 
-    console.log("Creating short URL with the following data:");
     const newURL = await this.urlRepository.create({
       originalURL,
       shortURL,
-      userId,
+      userId: user.id,
       alias: alias ? alias : undefined
     });
     return newURL;
   }
 
   async getByUserId(userId: string): Promise<IURL[]> {
-    const urls = await this.urlRepository.findByUserId(userId);
+    const user = await this.userRepository.findByFirebaseUid(userId);
+    if(!user){
+      return [];
+    }
+    const urls = await this.urlRepository.findByUserId(user.id);
     return urls;
   }
 }

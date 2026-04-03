@@ -26,9 +26,6 @@ async function getUrl(req: Request, res: Response){
 
 async function createShortURL(req: Request, res: Response){
   const { originalURL, alias } = req.body;
-  if(req.user){
-    console.log(req.user)
-  }
   const parsed = createURLScheme.safeParse({ originalURL, alias });
   if(!parsed.success){
     res.status(400).json({
@@ -37,9 +34,19 @@ async function createShortURL(req: Request, res: Response){
     });
     return;
   }
+  if(!req.user || !req.user.uid){
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
   try {
     const shortURL = await urlService.createShortURL(originalURL,req.user.uid, alias);
-    res.status(201).json({ shortURL });
+    res.status(201).json({ 
+      shortUrl: shortURL.shortURL,
+      originalURL: shortURL.originalURL,
+      alias: shortURL.alias,
+      createdAt: shortURL.createdAt,
+      id: shortURL.id
+    });
   } catch (error) {
     console.error("Error creating short URL:", error);
     res.status(500).json({ error: "Internal server error" });

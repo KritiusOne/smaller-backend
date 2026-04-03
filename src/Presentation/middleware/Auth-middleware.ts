@@ -12,7 +12,6 @@ export const isAuthenticated = async(req: Request, res: Response, next: NextFunc
   }
   try {
     const decodedToken = await auth.verifyToken(token);
-    console.log(decodedToken)
     req.user = { uid: decodedToken.uid, email: decodedToken.email };
     next();
   } catch (error) {
