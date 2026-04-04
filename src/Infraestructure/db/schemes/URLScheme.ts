@@ -9,6 +9,7 @@ const URLScheme = new Schema<IURL>({
   userId: { type: String, required: true },
   createdAt: { type: Date, required: true },
   alias: { type: String, required: false },
+  views: { type: Number, required: false, default: 0 }
 },
 {
   collection: CollectionList.URLS,

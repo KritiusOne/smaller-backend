@@ -5,4 +5,5 @@ export interface IURL {
   userId: string;
   createdAt: Date;
   alias?: string;
+  views?: number;
 }

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createURLScheme, getAllURLsByUserScheme, getURLScheme } from "./URLSchemes";
+import { createURLScheme, getAllURLsByUserScheme, getURLbyShortURLScheme, getURLScheme } from "./URLSchemes";
 import { container } from "@src/Infraestructure/di/container";
 import { DI_TOKENS } from "@src/Infraestructure/di/tokens";
 import { IURLService } from "@src/Domain/services/IURLService";
@@ -72,8 +72,36 @@ async function getAllURLsByUser(req: Request, res: Response) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
+
+async function getURLbyShortURL(req: Request, res: Response) {
+  const { shortURL } = req.params;
+  const { viewCount } = req.query;
+  const parsed = getURLbyShortURLScheme.safeParse({ shortURL, viewCount });
+  if(!parsed.success){
+    return res.status(400).json({
+      error: "Invalid short URL",
+      details: parsed.error
+    });
+  }
+  try {
+    const shouldIncreaseViewCount = parsed.data.viewCount ?? false;
+    const url = await urlService.getByShortURL(shortURL, shouldIncreaseViewCount);
+    if(!url){
+      return res.status(404).json({ error: "URL not found" });
+    }
+    res.status(200).json({
+      originalURL: url.originalURL,
+      alias: url.alias,
+      createdAt: url.createdAt,
+      id: url.id
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
 export const URLController = {
   getUrl,
   createShortURL,
-  getAllURLsByUser
+  getAllURLsByUser,
+  getURLbyShortURL
 };

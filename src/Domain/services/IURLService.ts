@@ -5,4 +5,5 @@ export interface IURLService {
   getAllURLs(): Promise<string[]>;
   createShortURL(originalURL: string, userId: string, alias?: string): Promise<IURL>;
   getByUserId(userId: string): Promise<IURL[]>;
+  getByShortURL(shortURL: string, viewCount?: boolean): Promise<IURL | null>;
 }

@@ -13,6 +13,23 @@ export class URLService implements IURLService {
     @inject(DI_TOKENS.IUserRepository) private userRepository: IUserRepository
   ) {}
 
+  async getByShortURL(shortURL: string, viewCount?: boolean): Promise<IURL | null> {
+    try {
+      console.log("SI ENTRE AL SERVICE")
+      const url = await this.urlRepository.findOneByShortURL(shortURL);
+      if(!url){
+        return null;
+      }
+      if(viewCount){
+        console.log("SI ENTRE AL SERVICE PARA AUMENTAR VIEWS")
+        await this.urlRepository.update(url.id, { views: (url.views || 0) + 1 });
+      }
+      return url;
+    } catch (error) {
+      throw new Error('Error fetching URL');
+    }
+  }
+
   async getAllURLs(): Promise<string[]> {
     const urls = await this.urlRepository.findAll();
     return urls.map(url => url.shortURL);

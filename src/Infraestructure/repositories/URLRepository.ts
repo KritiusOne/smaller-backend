@@ -6,6 +6,22 @@ import crypto from 'crypto';
 
 @injectable()
 export class URLRepository implements IURLRepository {
+  async update(id: string, updates: Partial<Omit<IURL, "id" | "createdAt">>): Promise<boolean> {
+    try {
+      const result = await URLModel.updateOne({
+        id
+      }, {
+        $set: updates
+      })
+      return result.modifiedCount > 0 
+    } catch (error) {
+      throw new Error('Error updating URL');
+    }
+  }
+  async findOneByShortURL(shortURL: string): Promise<IURL | null> {
+    const url = await URLModel.findOne({ shortURL });
+    return url ? url.toObject() : null;
+  }
   async findById(id: string): Promise<IURL | null> {
     const url = await URLModel.findOne({ id });
     return url ? url.toObject() : null;
