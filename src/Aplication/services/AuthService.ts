@@ -4,7 +4,6 @@ import { IAuthService } from "@src/Domain/services/IAuthService";
 import { DI_TOKENS } from "@src/Infraestructure/di/tokens";
 import { IUserService } from "@src/Domain/services/IUserService";
 import { config } from "@src/Infraestructure/config";
-const configFile = require(`@src/config/${config.fireabse.firebaseAdminConfigName}`)
 
 @injectable()
 export class AuthService implements IAuthService {
