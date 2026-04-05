@@ -3,23 +3,27 @@ import admin from "firebase-admin";
 import { IAuthService } from "@src/Domain/services/IAuthService";
 import { DI_TOKENS } from "@src/Infraestructure/di/tokens";
 import { IUserService } from "@src/Domain/services/IUserService";
-import {config} from "@src/Infraestructure/config";
+import { config } from "@src/Infraestructure/config";
 const configFile = require(`@src/config/${config.fireabse.firebaseAdminConfigName}`)
 
 @injectable()
 export class AuthService implements IAuthService {
-  constructor(@inject(DI_TOKENS.IUserService) private userService: IUserService, @inject(DI_TOKENS.FirebaseAuth) private firebaseAuth: admin.auth.Auth) {}
+  constructor(@inject(DI_TOKENS.IUserService) private userService: IUserService, @inject(DI_TOKENS.FirebaseAuth) private firebaseAuth: admin.auth.Auth) { }
 
   static initialize(): admin.app.App {
     if (admin.apps.length > 0) {
       return admin.app();
     }
+    if (config.fireabse.firebaseAdminConfigRaw.private_key) {
+      config.fireabse.firebaseAdminConfigRaw.private_key = config.fireabse.firebaseAdminConfigRaw.private_key.replace(/\\n/g, "\n");
+    }
+
 
     return admin.initializeApp({
-      credential: admin.credential.cert(configFile)
+      credential: admin.credential.cert(config.fireabse.firebaseAdminConfigRaw)
     })
   }
-  
+
   async signUpEmailAndPassword(email: string, password: string, displayName?: string): Promise<{ uid: string; email: string; displayName?: string; customToken: string; }> {
     try {
       const userRecord = await this.firebaseAuth.createUser({

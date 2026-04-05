@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+
 export const config = {
   queryString: process.env.queryString || '',
   databaseNameDev: process.env.databaseNameDev || '',
@@ -12,6 +13,7 @@ export const config = {
       ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
       : '',
     clientEmail: process.env.FIREBASE_CLIENT_EMAIL || '', 
-    firebaseAdminConfigName: process.env.FIREBASE_ADMIN_NAME || 'smaller-backend'
+    firebaseAdminConfigName: process.env.FIREBASE_ADMIN_NAME || 'smaller-backend',
+    firebaseAdminConfigRaw: process.env.FIREBASE_ADMIN_CONFIG_RAW ? JSON.parse(process.env.FIREBASE_ADMIN_CONFIG_RAW) : null
   }
 };
