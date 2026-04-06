@@ -13,10 +13,11 @@ export class AuthService implements IAuthService {
     if (admin.apps.length > 0) {
       return admin.app();
     }
-    if (config.firebase.firebaseAdminConfigRaw.private_key) {
-      config.firebase.firebaseAdminConfigRaw.private_key = config.firebase.firebaseAdminConfigRaw.private_key.replace(/\\n/g, "\n");
+    if (!config.firebase.firebaseAdminConfigRaw || !config.firebase.firebaseAdminConfigRaw.private_key) {
+      throw new Error('Firebase admin configuration is missing or incomplete');
     }
-
+    
+    config.firebase.firebaseAdminConfigRaw.private_key = config.firebase.firebaseAdminConfigRaw.private_key.replace(/\\n/g, "\n");
 
     return admin.initializeApp({
       credential: admin.credential.cert(config.firebase.firebaseAdminConfigRaw)
