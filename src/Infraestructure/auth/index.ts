@@ -4,9 +4,9 @@ import { config } from '../config';
 export function initializeAuth() {
   admin.initializeApp({
     credential: admin.credential.cert({
-      projectId: config.fireabse.projectId,
-      privateKey: config.fireabse.privateKey,
-      clientEmail: config.fireabse.clientEmail,
+      projectId: config.firebase.projectId,
+      privateKey: config.firebase.privateKey,
+      clientEmail: config.firebase.clientEmail,
     })
   })
   return admin.auth();

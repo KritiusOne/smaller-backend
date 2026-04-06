@@ -4,7 +4,6 @@ import { IAuthService } from "@src/Domain/services/IAuthService";
 import { DI_TOKENS } from "@src/Infraestructure/di/tokens";
 import { IUserService } from "@src/Domain/services/IUserService";
 import { config } from "@src/Infraestructure/config";
-const configFile = require(`@src/config/${config.fireabse.firebaseAdminConfigName}`)
 
 @injectable()
 export class AuthService implements IAuthService {
@@ -14,13 +13,13 @@ export class AuthService implements IAuthService {
     if (admin.apps.length > 0) {
       return admin.app();
     }
-    if (config.fireabse.firebaseAdminConfigRaw.private_key) {
-      config.fireabse.firebaseAdminConfigRaw.private_key = config.fireabse.firebaseAdminConfigRaw.private_key.replace(/\\n/g, "\n");
+    if (config.firebase.firebaseAdminConfigRaw.private_key) {
+      config.firebase.firebaseAdminConfigRaw.private_key = config.firebase.firebaseAdminConfigRaw.private_key.replace(/\\n/g, "\n");
     }
 
 
     return admin.initializeApp({
-      credential: admin.credential.cert(config.fireabse.firebaseAdminConfigRaw)
+      credential: admin.credential.cert(config.firebase.firebaseAdminConfigRaw)
     })
   }
 
