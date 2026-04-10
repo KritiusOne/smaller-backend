@@ -4,14 +4,43 @@ class Db {
   private static instance: Db;
   private connectionPromise: Promise<typeof mongoose> | null = null;
   private constructor(){
-    const queryString = config.queryString;
-    this.connectionPromise = mongoose.connect(`${queryString}${config.databaseNameDev}`).then(()=>{
+    const mongoUrl = this.buildMongoUrl();
+    this.connectionPromise = mongoose.connect(mongoUrl).then(()=>{
       console.log('Connected to MongoDB');
       return mongoose;
     }).catch((err)=>{
       console.error('Error connecting to MongoDB', err);
       throw err;
     })
+  }
+
+  private buildMongoUrl(): string {
+    const baseUrl = config.queryString;
+    const databaseName = config.databaseNameDev;
+
+    if (!baseUrl) {
+      throw new Error('MongoDB connection string is missing');
+    }
+
+    if (!databaseName) {
+      return baseUrl;
+    }
+
+    try {
+      const url = new URL(baseUrl);
+      url.pathname = `/${databaseName}`;
+      if (!url.searchParams.has('authSource')) {
+        url.searchParams.set('authSource', 'admin');
+      }
+      return url.toString();
+    } catch {
+      const separator = baseUrl.endsWith('/') ? '' : '/';
+      const connectionUrl = `${baseUrl}${separator}${databaseName}`;
+
+      return connectionUrl.includes('?')
+        ? connectionUrl
+        : `${connectionUrl}?authSource=admin`;
+    }
   }
 
   getInstance(): Db {

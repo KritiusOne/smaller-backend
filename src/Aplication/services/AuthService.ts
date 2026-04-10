@@ -14,6 +14,7 @@ export class AuthService implements IAuthService {
       return admin.app();
     }
     if (!config.firebase.firebaseAdminConfigRaw || !config.firebase.firebaseAdminConfigRaw.private_key) {
+      // console.log(JSON.stringify(config))
       throw new Error('Firebase admin configuration is missing or incomplete');
     }
     
