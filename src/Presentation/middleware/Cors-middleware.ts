@@ -1,6 +1,6 @@
 import { NextFunction, Response, Request } from "express";
 
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:4200'];
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:4200', "https://smaller-frontend.vercel.app"];
 
 export const corsMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const origin = req.headers.origin;
